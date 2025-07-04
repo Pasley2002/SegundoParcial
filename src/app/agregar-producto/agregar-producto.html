@@ -1,0 +1,52 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <h2 class="mb-4">
+        {{ modoEdicion ? 'Editar Producto' : 'Agregar Producto' }}
+      </h2>
+
+      <form [formGroup]="productoForm" (ngSubmit)="guardar()">
+
+        <div class="mb-3">
+          <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre del producto"
+                 [class.is-invalid]="productoForm.get('nombre')?.invalid && productoForm.get('nombre')?.touched">
+          <div class="invalid-feedback">El nombre es obligatorio.</div>
+        </div>
+
+        <div class="mb-3">
+          <textarea class="form-control" formControlName="descripcion" placeholder="Descripción del producto"
+                    [class.is-invalid]="productoForm.get('descripcion')?.invalid && productoForm.get('descripcion')?.touched"></textarea>
+          <div class="invalid-feedback">La descripción es obligatoria.</div>
+        </div>
+
+        <div class="mb-3">
+          <input type="text" class="form-control" formControlName="precio" placeholder="Precio (ARS)"
+                 [class.is-invalid]="productoForm.get('precio')?.invalid && productoForm.get('precio')?.touched">
+          <div class="invalid-feedback">El precio es obligatorio y debe ser mayor a 0.</div>
+        </div>
+
+        <div class="mb-3">
+          <input type="text" class="form-control" formControlName="categoria" placeholder="Categoría"
+                 [class.is-invalid]="productoForm.get('categoria')?.invalid && productoForm.get('categoria')?.touched">
+          <div class="invalid-feedback">La categoría es obligatoria.</div>
+        </div>
+
+        <div class="mb-3">
+          <input type="text" class="form-control mb-2" formControlName="imagen" placeholder="URL de imagen" 
+          [class.is-invalid]="productoForm.get('imagen')?.invalid && productoForm.get('imagen')?.touched">
+          <div class="invalid-feedback">La imagen es obligatoria.</div>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-success" [disabled]="productoForm.invalid">
+            {{ modoEdicion ? 'Actualizar' : 'Agregar' }}
+          </button>
+
+          <button type="button" class="btn btn-danger" (click)="cancelar()">Cancelar</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

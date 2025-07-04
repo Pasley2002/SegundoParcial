@@ -1,0 +1,14 @@
+.boton-agregar {
+  background-color: green;
+  color: white;
+}
+
+.boton-editar {
+  background-color: #ffeb3b;
+  color: black;
+}
+
+.boton-eliminar {
+  background-color: #f44336;
+  color: white;
+}

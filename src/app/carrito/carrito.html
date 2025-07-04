@@ -1,0 +1,43 @@
+<div class="container mt-4">
+  <h2>Carrito de Compras</h2>
+
+  <table class="table table-bordered" *ngIf="productos.length > 0">
+    <thead class="table-dark">
+      <tr>
+        <th>Producto</th>
+        <th>Precio</th>
+        <th>Cantidad</th>
+        <th>Total</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr *ngFor="let p of productos">
+        <td>{{ p.nombre }}</td>
+        <td>${{ p.precio }}</td>
+        <td>
+          <input type="text" [value]="p.cantidad" (input)="actualizarCantidad(p.id, $event)" class="form-control" min="1" />
+        </td>
+        <td>${{ p.precio * p.cantidad }}</td>
+        <td><button class="btn btn-danger btn-sm" (click)="eliminar(p.id)">Eliminar</button></td>
+      </tr>
+    </tbody>
+    
+  </table>
+
+  <div *ngIf="productos.length === 0" class="alert alert-info mt-3"> 
+    No hay productos en el carrito.
+  </div>
+
+  <div class="d-flex gap-2 mt-3">
+    <button class="btn btn-primary" (click)="generarFactura()" [disabled]="productos.length === 0">
+      Generar Factura
+    </button>
+
+    <button class="btn btn-danger" (click)="volver()">
+      Volver
+    </button>
+  </div>
+
+</div>

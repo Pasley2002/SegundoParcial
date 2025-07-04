@@ -1,0 +1,56 @@
+<div class="container mt-4">
+  <h2>Listado de Productos</h2>
+
+  <div class="mb-3">
+    <input type="text" [(ngModel)]="filtro" placeholder="Buscar por nombre o categoría" class="form-control">
+  </div>
+
+  <a class="btn btn-primary mb-3" routerLink="/producto/nuevo">Agregar Producto</a>
+
+  <table class="table table-bordered table-striped mt-3">
+    <thead class="table-dark">
+      <tr>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Precio (ARS)</th>
+        <th>Categoría</th>
+        <th>Imagen</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let producto of productos | filtro:filtro">
+        <td>{{ producto.nombre }}</td>
+        <td>{{ producto.descripcion }}</td>
+        <td>${{ producto.precio }}</td>
+        <td>{{ producto.categoria }}</td>
+        <td>
+          <img [src]="producto.imagen" alt="imagen" width="60" height="60" *ngIf="producto.imagen">
+        </td>
+        <td>
+          <button mat-fab class="boton-editar" (click)="editar(producto)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-fab class="boton-eliminar" (click)="eliminar(producto.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button mat-fab class="boton-agregar" (click)="agregar(producto)">
+            <mat-icon>add</mat-icon>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="productos.length === 0" class="alert alert-info">
+    No hay productos cargados.
+  </div>
+
+  <div class="mt-4" *ngIf="carritoServicio.obtener().length > 0">
+    <a class="btn btn-success" routerLink="/carrito">
+      Ver Carrito ({{ carritoServicio.obtener().length }} productos)
+    </a>
+  </div>
+  
+</div>
