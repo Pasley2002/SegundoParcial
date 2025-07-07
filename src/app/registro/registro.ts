@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router ,RouterModule } from '@angular/router';
 import { Usuario } from '../class/Usuario/usuario';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-registro',
@@ -24,17 +25,17 @@ export class Registro {
 
   registrar() {
 
-    if (this.registroForm.invalid) {
-      alert("Complete correctamente los campos requeridos");
-      return;
-    }
-
     const { usuario, email, password } = this.registroForm.value;
     const usuarios: Usuario[] = JSON.parse(localStorage.getItem('usuarios') ?? '[]');
     
     const usuarioExiste = usuarios.some(u => u.usuario === usuario || u.email === email);
     if (usuarioExiste) {
-      alert('El usuario o email ya está registrado');
+      Swal.fire({
+        icon: 'error',
+        title: 'Usuario existente',
+        text: 'El usuario o email ya está registrado.',
+        confirmButtonText: 'Reintentar'
+      });
       return;
     }
 
@@ -46,8 +47,14 @@ export class Registro {
     usuarios.push(nuevoUsuario);
     localStorage.setItem('usuarios', JSON.stringify(usuarios));
 
-    alert('Usuario registrado correctamente');
-    this.router.navigate(['/login']);
+    Swal.fire({
+      icon: 'success',
+      title: 'Registro exitoso',
+      text: 'Usuario registrado correctamente.',
+      confirmButtonText: 'Ir al login'
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
   }
 
 }

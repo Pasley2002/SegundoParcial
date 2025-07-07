@@ -4,6 +4,7 @@ import { Producto } from '../class/Producto/producto';
 import { bcraServicio } from '../service/bcraServicio';
 import { carritoServicio } from '../service/carritoServicio';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-factura',
@@ -33,7 +34,7 @@ export class Factura implements OnInit {
     const sesion = localStorage.getItem('dataSesion');
     if (sesion) {
       const usuario = JSON.parse(sesion);
-      this.nombreUsuario = usuario.nombre || usuario.email;
+      this.nombreUsuario = usuario.usuario;
     }
   }
 
@@ -48,8 +49,14 @@ export class Factura implements OnInit {
   confirmarCompra(): void {
     this.carritoService.vaciar();
     this.compraConfirmada.emit();
-    alert('¡Compra realizada con éxito!');
-    this.router.navigate(['/producto']);
+    Swal.fire({
+      icon: 'success',
+      title: '¡Compra realizada con éxito!',
+      text: 'Gracias por tu compra, ' + this.nombreUsuario + ' 🙌',
+      confirmButtonText: 'Volver al catálogo'
+    }).then(() => {
+      this.router.navigate(['/producto']);
+    });
   }
 
 }

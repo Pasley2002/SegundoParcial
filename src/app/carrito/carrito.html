@@ -17,7 +17,7 @@
         <td>{{ p.nombre }}</td>
         <td>${{ p.precio }}</td>
         <td>
-          <input type="text" [value]="p.cantidad" (input)="actualizarCantidad(p.id, $event)" class="form-control" min="1" />
+          <input type="number" [value]="p.cantidad" (input)="actualizarCantidad(p.id, $event)" class="form-control" min="1" />
         </td>
         <td>${{ p.precio * p.cantidad }}</td>
         <td><button class="btn btn-danger btn-sm" (click)="eliminar(p.id)">Eliminar</button></td>

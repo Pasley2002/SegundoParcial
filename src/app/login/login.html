@@ -8,7 +8,7 @@
 
         <!-- Usuario -->
          <div class="mb-3">
-          <input type="text" formControlName="usuario" class="form-control" placeholder="Ingrese su usuario o correo electrónico"
+          <input type="text" formControlName="usuario" class="form-control" placeholder="Ingrese su usuario"
             [class.is-invalid]="loginForm.get('usuario')?.invalid && loginForm.get('usuario')?.touched"
             [class.is-valid]="loginForm.get('usuario')?.valid"/>
 

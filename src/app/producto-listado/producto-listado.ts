@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FiltroPipe } from '../pipe/filtro-pipe';
 import { FormsModule } from '@angular/forms';
 import { carritoServicio } from '../service/carritoServicio';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-producto-listado',
@@ -26,7 +27,13 @@ export class ProductoListado {
 
   agregar(producto: Producto) {
     this.carritoServicio.agregar(producto);
-    alert(`${producto.nombre} fue agregado al carrito`);
+    Swal.fire({
+      icon: 'success',
+      title: 'Producto agregado',
+      text: `${producto.nombre} fue agregado al carrito.`,
+      timer: 1500,
+      showConfirmButton: false
+    });
   }
 
   editar(producto: Producto) {
@@ -35,10 +42,29 @@ export class ProductoListado {
   }
 
   eliminar(id: number) {
-    if (confirm('¿Estás seguro de que querés eliminar este producto?')) {
-      this.productos = this.productos.filter(p => p.id !== id);
-      this.productoServicio.setProductos(this.productos);
-    }
+    Swal.fire({
+      title: '¿Eliminar producto?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.productos = this.productos.filter(p => p.id !== id);
+        this.productoServicio.setProductos(this.productos);
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Eliminado',
+          text: 'El producto fue eliminado correctamente.',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
   }
 
 }

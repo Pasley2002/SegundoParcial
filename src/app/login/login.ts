@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Usuario } from '../class/Usuario/usuario';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -22,35 +23,46 @@ export class Login {
   }
 
   login() {
-    
-    if (this.loginForm.invalid) {
-      alert("Complete correctamente los campos requeridos");
-      return;
-    }
 
     const { usuario, password } = this.loginForm.value;
 
     const datos = localStorage.getItem('usuarios');
     if (!datos) {
-      alert("No hay usuarios registrados");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Sin registros',
+        text: 'No hay usuarios registrados.',
+        confirmButtonText: 'OK'
+      });
       return;
     }
 
     const usuarios: Usuario[] = JSON.parse(datos);
 
     const encontrado = usuarios.find(u =>
-      (u.usuario === usuario || u.email === usuario) && u.password === password
+      u.usuario === usuario && u.password === password
     );
     
     if (!encontrado) {
-      alert("Usuario o contraseña incorrectos");
+      Swal.fire({
+        icon: 'error',
+        title: 'Acceso denegado',
+        text: 'Usuario o contraseña incorrectos.',
+        confirmButtonText: 'Reintentar'
+      });
       return;
     }
     
-    alert("Bienvenido al sistema")
-    localStorage.setItem('logueado', 'true')
-    localStorage.setItem('dataSesion', JSON.stringify(encontrado))
-    this.router.navigate(['/producto']);
+    Swal.fire({
+      icon: 'success',
+      title: 'Bienvenido',
+      text: `Hola ${encontrado.usuario || 'usuario'} 👋`,
+      confirmButtonText: 'Continuar'
+    }).then(() => {
+      localStorage.setItem('logueado', 'true');
+      localStorage.setItem('dataSesion', JSON.stringify(encontrado));
+      this.router.navigate(['/producto']);
+    });
   }
 
 }

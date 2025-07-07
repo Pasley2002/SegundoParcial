@@ -6,6 +6,7 @@ import { productoServicio } from '../service/productoServicio';
 import { carritoServicio } from '../service/carritoServicio';
 import { FormsModule } from '@angular/forms';
 import { Producto } from '../class/Producto/producto';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-producto-form',
@@ -38,20 +39,29 @@ export class AgregarProducto {
   }
 
   guardar() {
-    if (this.productoForm.invalid) {
-      this.productoForm.markAllAsTouched();
-      alert('Por favor complete todos los campos correctamente.');
-      return;
-    }
 
     const producto: Producto = this.productoForm.value;
 
     if (this.modoEdicion) {
       this.productoServicio.actualizarProducto(producto);
-      alert('Producto actualizado correctamente');
+      Swal.fire({
+        icon: 'success',
+        title: 'Producto actualizado',
+        text: 'El producto fue actualizado correctamente.',
+        confirmButtonText: 'Continuar'
+      }).then(() => {
+        this.router.navigate(['/producto']);
+      });
     } else {
       this.productoServicio.agregarProducto(producto);
-      alert('Producto agregado correctamente');
+      Swal.fire({
+        icon: 'success',
+        title: 'Producto agregado',
+        text: 'El producto fue agregado correctamente.',
+        confirmButtonText: 'Ver listado'
+      }).then(() => {
+        this.router.navigate(['/producto']);
+      });
     }
 
     this.router.navigate(['/producto']);
