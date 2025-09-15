@@ -46,3 +46,5 @@ export class productoServicio {
   }
 
 }
+
+export { Producto };
