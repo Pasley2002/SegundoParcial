@@ -1,13 +1,25 @@
 import { TestBed } from '@angular/core/testing';
+import { productoServicio } from './productoServicio';
+import { Firestore } from '@angular/fire/firestore';
+import { of } from 'rxjs';
 
-import { Producto } from './productoServicio';
+const firestoreMock = {
+  collection: () => ({
+    valueChanges: () => of([])
+  })
+};
 
-describe('Producto', () => {
-  let service: Producto;
+describe('productoServicio', () => {
+  let service: productoServicio;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Producto);
+    TestBed.configureTestingModule({
+      providers: [
+        productoServicio,
+        { provide: Firestore, useValue: firestoreMock }
+      ]
+    });
+    service = TestBed.inject(productoServicio);
   });
 
   it('should be created', () => {

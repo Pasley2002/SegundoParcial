@@ -1,50 +1,49 @@
 import { Injectable } from '@angular/core';
+import { Firestore, collection, collectionData, doc, addDoc, updateDoc, deleteDoc, getDoc } from '@angular/fire/firestore';
+import { Observable, from } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Producto } from '../class/Producto/producto';
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class productoServicio {
+  private productoCollection;
 
-  private _productos: Producto[];
-
-  constructor() {
-    this._productos = JSON.parse(localStorage.getItem('productos') ?? '[]');
+  constructor(private firestore: Firestore) {
+    this.productoCollection = collection(this.firestore, 'productos');
   }
 
-  public get Productos(): Producto[] {
-    return this._productos;
+  getProductos(): Observable<Producto[]> {
+    return collectionData(this.productoCollection, { idField: 'id' }) as Observable<Producto[]>;
   }
 
-  public getProductos(): void {
-    this._productos = JSON.parse(localStorage.getItem('productos') ?? '[]');
+  getProducto(id: string): Observable<Producto | null> {
+    const docRef = doc(this.firestore, `productos/${id}`);
+    return from(getDoc(docRef)).pipe(
+      map(docSnap => {
+        if (docSnap.exists()) {
+          const data = docSnap.data() as any;
+          return { id: docSnap.id, ...data } as Producto;
+        } else {
+          return null;
+        }
+      })
+    );
   }
 
-  public setProductos(productos: Producto[]): void {
-    this._productos = productos;
-    localStorage.setItem('productos', JSON.stringify(this._productos));
+  agregarProducto(producto: Producto) {
+    return addDoc(this.productoCollection, producto);
   }
 
-  public agregarProducto(producto: Producto): void {
-    producto.id = this.generarId();
-    this._productos.push(producto);
-    this.setProductos(this._productos);
+  actualizarProducto(producto: Producto) {
+    const docRef = doc(this.firestore, `productos/${producto.id}`);
+    const { id, ...productoSinId } = producto;
+    return updateDoc(docRef, { ...productoSinId });
   }
 
-  public actualizarProducto(productoActualizado: Producto): void {
-    const index = this._productos.findIndex(p => p.id === productoActualizado.id);
-    if (index !== -1) {
-      this._productos[index] = productoActualizado;
-      this.setProductos(this._productos);
-    }
+  eliminarProducto(id: string) {
+    const docRef = doc(this.firestore, `productos/${id}`);
+    return deleteDoc(docRef);
   }
-  
-  private generarId(): number {
-    if (this._productos.length === 0) return 1;
-    return Math.max(...this._productos.map(p => p.id ?? 0)) + 1;
-  }
-
 }
-
-export { Producto };

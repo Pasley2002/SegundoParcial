@@ -47,9 +47,9 @@
     No hay productos cargados.
   </div>
 
-  <div class="mt-4" *ngIf="carritoServicio.obtener().length > 0">
+  <div class="mt-4" *ngIf="carrito$ | async as productosDelCarrito">
     <a class="btn btn-success" routerLink="/carrito">
-      Ver Carrito ({{ carritoServicio.obtener().length }} productos)
+      Ver Carrito ({{ productosDelCarrito.length }} productos)
     </a>
   </div>
   

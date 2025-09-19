@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router ,RouterModule } from '@angular/router';
-import { Usuario } from '../class/Usuario/usuario';
+import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
+import { AuthService } from '../service/auth';
+import { Usuario } from '../class/Usuario/usuario';
 
 @Component({
   selector: 'app-registro',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './registro.html',
   styleUrl: './registro.css'
@@ -15,46 +17,49 @@ export class Registro {
 
   registroForm: FormGroup;
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.registroForm = new FormGroup({
       usuario: new FormControl('', [Validators.required]),
       email: new FormControl ('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.minLength(8)])
+      password: new FormControl('', [Validators.required, Validators.minLength(8)]),
+      rol: new FormControl(1) // El rol por defecto será 1 (usuario normal)
     });
   }
 
-  registrar() {
+  async registrar() {
+    if (this.registroForm.valid) {
+      try {
+        const nuevoUsuario: Usuario = this.registroForm.value;
+        await this.authService.register(nuevoUsuario);
 
-    const { usuario, email, password } = this.registroForm.value;
-    const usuarios: Usuario[] = JSON.parse(localStorage.getItem('usuarios') ?? '[]');
-    
-    const usuarioExiste = usuarios.some(u => u.usuario === usuario || u.email === email);
-    if (usuarioExiste) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Registro exitoso',
+          text: 'Usuario registrado correctamente.',
+          confirmButtonText: 'Ir al login'
+        }).then(() => {
+          this.router.navigate(['/login']);
+        });
+
+      } catch (error: any) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de registro',
+          text: error.message,
+          confirmButtonText: 'Reintentar'
+        });
+      }
+    } else {
       Swal.fire({
         icon: 'error',
-        title: 'Usuario existente',
-        text: 'El usuario o email ya está registrado.',
-        confirmButtonText: 'Reintentar'
+        title: 'Formulario inválido',
+        text: 'Por favor, completa todos los campos correctamente.',
+        confirmButtonText: 'OK'
       });
-      return;
     }
-
-    const nuevoUsuario = new Usuario();
-    nuevoUsuario.usuario = usuario;
-    nuevoUsuario.email = email;
-    nuevoUsuario.password = password;
-
-    usuarios.push(nuevoUsuario);
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Registro exitoso',
-      text: 'Usuario registrado correctamente.',
-      confirmButtonText: 'Ir al login'
-    }).then(() => {
-      this.router.navigate(['/login']);
-    });
   }
 
 }

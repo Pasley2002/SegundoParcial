@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Producto } from '../class/Producto/producto';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -8,21 +8,29 @@ import { FiltroPipe } from '../pipe/filtro-pipe';
 import { FormsModule } from '@angular/forms';
 import { carritoServicio } from '../service/carritoServicio';
 import Swal from 'sweetalert2';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-producto-listado',
+  standalone: true,
   imports: [CommonModule, RouterModule, MatIconModule, FiltroPipe, FormsModule],
   templateUrl: './producto-listado.html',
   styleUrl: './producto-listado.css'
 })
-export class ProductoListado {
+export class ProductoListado implements OnInit {
 
   productos: Producto[] = [];
   filtro: string = '';
+  carrito$: Observable<any[]>;
 
   constructor(private router: Router, private productoServicio: productoServicio, public carritoServicio: carritoServicio) {
-    const data = localStorage.getItem('productos');
-    this.productos = data ? JSON.parse(data) : [];
+    this.carrito$ = this.carritoServicio.obtener();
+  }
+
+  ngOnInit(): void {
+    this.productoServicio.getProductos().subscribe(productos => {
+      this.productos = productos;
+    });
   }
 
   agregar(producto: Producto) {
@@ -36,32 +44,35 @@ export class ProductoListado {
     });
   }
 
-  editar(producto: Producto) {
-    localStorage.setItem('productoEditar', JSON.stringify(producto));
-    this.router.navigate(['/producto/nuevo']);
+  editar(producto: any) {
+    this.router.navigate(['/producto/editar', producto.id]);
   }
 
-  eliminar(id: number) {
+  eliminar(id: any) {
+    const idString = id.toString();
     Swal.fire({
-      title: '¿Eliminar producto?',
-      text: 'Esta acción no se puede deshacer.',
+      title: '¿Estás seguro?',
+      text: 'No podrás revertir esto',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminarlo'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.productos = this.productos.filter(p => p.id !== id);
-        this.productoServicio.setProductos(this.productos);
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Eliminado',
-          text: 'El producto fue eliminado correctamente.',
-          timer: 1500,
-          showConfirmButton: false
+        this.productoServicio.eliminarProducto(id).then(() => {
+          Swal.fire(
+            '¡Eliminado!',
+            'El producto ha sido eliminado.',
+            'success'
+          );
+        }).catch(error => {
+          Swal.fire(
+            'Error',
+            'Hubo un problema al eliminar el producto.',
+            'error'
+          );
+          console.error(error);
         });
       }
     });

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { carritoServicio } from '../service/carritoServicio';
 import { Producto } from '../class/Producto/producto';
@@ -12,22 +12,35 @@ import { CommonModule } from '@angular/common';
   styleUrl: './carrito.css'
 })
 
-export class Carrito {
+export class Carrito implements OnInit {
 
   productos: (Producto & { cantidad: number })[] = [];
 
-  constructor(private carrito: carritoServicio, private router: Router) {
-    this.productos = this.carrito.obtener();
+  constructor(private carrito: carritoServicio, private router: Router) { }
+
+  ngOnInit(): void {
+    this.carrito.obtener().subscribe(productos => {
+      this.productos = productos;
+    });
   }
 
-  eliminar(id: number) {
-    this.carrito.eliminar(id);
-    this.productos = this.carrito.obtener();
+  eliminar(id: string) {
+    this.carrito.eliminar(id).then(() => {
+      console.log('Producto eliminado del carrito');
+    }).catch(error => {
+      console.error('Error al eliminar producto: ', error);
+    });
   }
 
-  actualizarCantidad(id: number, event: Event) {
+  actualizarCantidad(id: string, event: Event) {
     const cantidad = +(event.target as HTMLInputElement).value;
-    if (cantidad > 0) this.carrito.actualizar(id, cantidad);
+    if (cantidad > 0) {
+      this.carrito.actualizar(id, cantidad).then(() => {
+        console.log('Cantidad actualizada');
+      }).catch(error => {
+        console.error('Error al actualizar la cantidad: ', error);
+      });
+    }
   }
 
   generarFactura() {
@@ -37,5 +50,4 @@ export class Carrito {
   volver() {
     this.router.navigate(['/producto']);
   }
-
 }

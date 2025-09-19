@@ -1,10 +1,12 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Producto } from '../class/Producto/producto';
 import { bcraServicio } from '../service/bcraServicio';
 import { carritoServicio } from '../service/carritoServicio';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { Observable } from 'rxjs';
+import { Auth, getAuth, onAuthStateChanged } from '@angular/fire/auth'; // Importa Auth, getAuth, y onAuthStateChanged
 
 @Component({
   selector: 'app-factura',
@@ -16,26 +18,35 @@ import Swal from 'sweetalert2';
 
 export class Factura implements OnInit {
 
-  @Input() productosSeleccionados: (Producto & { cantidad: number })[] = [];
+  productosSeleccionados: (Producto & { cantidad: number })[] = [];
   @Output() compraConfirmada = new EventEmitter<void>();
 
   tipoCambioUSD: number = 350;
   nombreUsuario: string = '';
 
-  constructor(private bcraService: bcraServicio, private carritoService: carritoServicio, private router: Router) {}
+  constructor(
+    private bcraService: bcraServicio, 
+    private carritoService: carritoServicio, 
+    private router: Router,
+    private auth: Auth
+  ) {}
 
   ngOnInit(): void {
-    this.productosSeleccionados = this.carritoService.obtener();
+    this.carritoService.obtener().subscribe(productos => {
+      this.productosSeleccionados = productos;
+    });
 
     this.bcraService.obtenerTipoCambio().subscribe(valor => {
       this.tipoCambioUSD = valor;
     });
 
-    const sesion = localStorage.getItem('dataSesion');
-    if (sesion) {
-      const usuario = JSON.parse(sesion);
-      this.nombreUsuario = usuario.usuario;
-    }
+    onAuthStateChanged(this.auth, (user) => {
+      if (user) {
+        this.nombreUsuario = user.displayName || 'Usuario';
+      } else {
+        this.nombreUsuario = 'Usuario';
+      }
+    });
   }
 
   obtenerTotalARS(): number {
@@ -46,8 +57,9 @@ export class Factura implements OnInit {
     return +(this.obtenerTotalARS() / this.tipoCambioUSD).toFixed(2);
   }
 
-  confirmarCompra(): void {
-    this.carritoService.vaciar();
+  async confirmarCompra(): Promise<void> {
+    await this.carritoService.vaciar();
+
     this.compraConfirmada.emit();
     Swal.fire({
       icon: 'success',
@@ -58,5 +70,4 @@ export class Factura implements OnInit {
       this.router.navigate(['/producto']);
     });
   }
-
 }

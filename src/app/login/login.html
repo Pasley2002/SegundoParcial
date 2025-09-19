@@ -8,20 +8,23 @@
 
         <!-- Usuario -->
          <div class="mb-3">
-          <input type="text" formControlName="usuario" class="form-control" placeholder="Ingrese su usuario"
-            [class.is-invalid]="loginForm.get('usuario')?.invalid && loginForm.get('usuario')?.touched"
-            [class.is-valid]="loginForm.get('usuario')?.valid"/>
+          <input type="text" formControlName="email" class="form-control" placeholder="Ingrese su email"
+            [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+            [class.is-valid]="loginForm.get('email')?.valid"/>
 
           <div class="invalid-feedback">
-            <small *ngIf="loginForm.get('usuario')?.errors?.['required']">
-              El usuario es obligatorio.
+            <small *ngIf="loginForm.get('email')?.errors?.['required']">
+              El correo es obligatorio.
+            </small>
+            <small *ngIf="loginForm.get('email')?.errors?.['email']">
+              Ingrese un email válido.
             </small>
           </div>
         </div>
 
         <!-- Contraseña -->
         <div class="mb-3">
-          <input type="password" formControlName="password" class="form-control" placeholder="Ingrese su clave"
+          <input type="password" formControlName="password" class="form-control" placeholder="Ingrese su contraseña"
             [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
             [class.is-valid]="loginForm.get('password')?.valid"/>
 

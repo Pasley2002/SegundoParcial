@@ -1,53 +1,48 @@
 import { Injectable } from '@angular/core';
+import { Firestore, collection, doc, addDoc, getDoc, updateDoc, deleteDoc, getDocs, writeBatch } from '@angular/fire/firestore'; // Asegúrate de importar getDocs y writeBatch
+import { Observable, from } from 'rxjs';
 import { Producto } from '../class/Producto/producto';
+import { collectionData } from 'rxfire/firestore';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class carritoServicio {
 
-  constructor() {
-    const guardado = localStorage.getItem('carrito');
-    this.productos = guardado ? JSON.parse(guardado) : [];
-  }
+  private carritoCollection;
 
-  private guardarEnStorage() {
-    localStorage.setItem('carrito', JSON.stringify(this.productos));
+  constructor(private firestore: Firestore) {
+    this.carritoCollection = collection(this.firestore, 'carrito');
   }
-
-  private productos: (Producto & { cantidad: number })[] = [];
 
   agregar(producto: Producto, cantidad: number = 1) {
-    const encontrado = this.productos.find(p => p.id === producto.id);
-    if (encontrado) {
-      encontrado.cantidad += cantidad;
-    } else {
-      this.productos.push({ ...producto, cantidad });
-    }
-    this.guardarEnStorage();
+    const itemCarrito = { ...producto, cantidad };
+    return addDoc(this.carritoCollection, itemCarrito);
   }
 
-  obtener(): (Producto & { cantidad: number })[] {
-    return this.productos;
+  obtener(): Observable<(Producto & { cantidad: number })[]> {
+    return collectionData(this.carritoCollection, { idField: 'id' }) as Observable<(Producto & { cantidad: number })[]>;
   }
 
-  eliminar(id: number) {
-    this.productos = this.productos.filter(p => p.id !== id);
-    this.guardarEnStorage();
+  eliminar(id: string) {
+    const docRef = doc(this.firestore, `carrito/${id}`);
+    return deleteDoc(docRef);
   }
 
-  actualizar(id: number, cantidad: number) {
-    const prod = this.productos.find(p => p.id === id);
-    if (prod) {
-      prod.cantidad = cantidad;
-      this.guardarEnStorage();
-    }
+  actualizar(id: string, cantidad: number) {
+    const docRef = doc(this.firestore, `carrito/${id}`);
+    return updateDoc(docRef, { cantidad });
   }
 
-  vaciar() {
-    this.productos = [];
-    localStorage.removeItem('carrito');
-  }
+  async vaciar() {
+    const batch = writeBatch(this.firestore);
+    const querySnapshot = await getDocs(this.carritoCollection);
 
+    querySnapshot.forEach(doc => {
+      batch.delete(doc.ref);
+    });
+
+    return batch.commit();
+  }
 }
