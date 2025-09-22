@@ -14,11 +14,12 @@ import { CommonModule } from '@angular/common';
 
 export class Carrito implements OnInit {
 
-  productos: (Producto & { cantidad: number })[] = [];
+  productos: (Producto & { cantidad: number })[] = []; // Lista de productos con cantidad
 
   constructor(private carrito: carritoServicio, private router: Router) { }
 
   ngOnInit(): void {
+    // Suscripción para obtener los productos del carrito
     this.carrito.obtener().subscribe(productos => {
       this.productos = productos;
     });

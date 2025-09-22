@@ -5,17 +5,17 @@ import { ProductoListado } from './producto-listado/producto-listado';
 import { AgregarProducto } from './agregar-producto/agregar-producto';
 import { Carrito } from './carrito/carrito';
 import { Factura } from './factura/factura';
-import { UsuarioListadoComponent } from './usuario-listado/usuario-listado';
 import { AdminAuthGuard } from './service/admin-auth-guard';
+import { authGuard } from './service/auth.guard';
 
 export const routes: Routes = [
     {path: '', component: Login},
     {path: 'login', component: Login},
     {path: 'registro', component: Registro},
-    {path: 'producto', component: ProductoListado},
-    {path: 'producto/nuevo', component: AgregarProducto},
-    {path: 'producto/editar/:id', component: AgregarProducto},
-    {path: 'carrito', component: Carrito},
-    {path: 'factura', component: Factura},
-    {path: 'usuarios', component: UsuarioListadoComponent, canActivate: [AdminAuthGuard]}
+    {path: 'producto', component: ProductoListado, canActivate: [authGuard]},
+    {path: 'producto/nuevo', component: AgregarProducto, canActivate: [authGuard]},
+    {path: 'producto/editar/:id', component: AgregarProducto, canActivate: [authGuard]},
+    {path: 'carrito', component: Carrito, canActivate: [authGuard]},
+    {path: 'factura', component: Factura, canActivate: [authGuard]},
+    { path: '**', redirectTo: '/login' }
 ];

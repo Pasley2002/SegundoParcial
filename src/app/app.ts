@@ -1,12 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
+import { NavbarComponent } from './navbar/navbar';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [ CommonModule, RouterOutlet, NavbarComponent ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
-  protected title = 'ParcialRecu';
+export class App implements OnInit {
+  title = 'mi-app';
+  logueado: boolean = false;
+
+  constructor(private auth: Auth) {}
+
+  ngOnInit(): void {
+    // Detecta cambios de estado en la autenticación
+    onAuthStateChanged(this.auth, (user) => {
+      this.logueado = !!user; // true si hay usuario logueado, false si no
+    });
+  }
 }

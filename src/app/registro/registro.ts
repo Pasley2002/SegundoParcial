@@ -13,6 +13,7 @@ import { Usuario } from '../class/Usuario/usuario';
   templateUrl: './registro.html',
   styleUrl: './registro.css'
 })
+
 export class Registro {
 
   registroForm: FormGroup;
@@ -29,6 +30,7 @@ export class Registro {
     });
   }
 
+  // Función para registrar un nuevo usuario
   async registrar() {
     if (this.registroForm.valid) {
       try {

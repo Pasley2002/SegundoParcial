@@ -19,15 +19,16 @@ import { Observable } from 'rxjs';
 })
 export class ProductoListado implements OnInit {
 
-  productos: Producto[] = [];
+  productos: Producto[] = []; // Lista de productos
   filtro: string = '';
-  carrito$: Observable<any[]>;
+  carrito$: Observable<any[]>; // Observable con los productos del carrito
 
   constructor(private router: Router, private productoServicio: productoServicio, public carritoServicio: carritoServicio) {
-    this.carrito$ = this.carritoServicio.obtener();
+    this.carrito$ = this.carritoServicio.obtener(); // Obtiene los productos del carrito
   }
 
   ngOnInit(): void {
+    // Suscripción para obtener los productos desde Firestore
     this.productoServicio.getProductos().subscribe(productos => {
       this.productos = productos;
     });
@@ -49,7 +50,11 @@ export class ProductoListado implements OnInit {
   }
 
   eliminar(id: any) {
-    const idString = id.toString();
+    if (!id) {
+      console.error("No se pudo obtener el ID del producto para eliminar.");
+      return;
+    }
+
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'No podrás revertir esto',

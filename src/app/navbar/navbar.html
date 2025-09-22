@@ -1,0 +1,12 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+
+  <div class="container-fluid">
+    <span class="navbar-brand">Local ValdesNacho</span>
+
+    <div *ngIf="logueado" class="d-flex align-items-center ms-auto">
+      <span class="text-white me-3">Bienvenido, {{ nombreUsuario }}</span>
+      <button class="btn btn-outline-light btn-sm" (click)="logout()">Cerrar Sesión</button>
+    </div>
+  </div>
+
+</nav>

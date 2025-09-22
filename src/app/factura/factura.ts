@@ -24,12 +24,7 @@ export class Factura implements OnInit {
   tipoCambioUSD: number = 350;
   nombreUsuario: string = '';
 
-  constructor(
-    private bcraService: bcraServicio, 
-    private carritoService: carritoServicio, 
-    private router: Router,
-    private auth: Auth
-  ) {}
+  constructor( private bcraService: bcraServicio, private carritoService: carritoServicio, private router: Router, private auth: Auth) {}
 
   ngOnInit(): void {
     this.carritoService.obtener().subscribe(productos => {

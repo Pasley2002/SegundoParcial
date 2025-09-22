@@ -1,28 +1,36 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, addDoc, getDoc, updateDoc, deleteDoc, getDocs, writeBatch } from '@angular/fire/firestore'; // Asegúrate de importar getDocs y writeBatch
+import { map } from 'rxjs/operators';
+import { Firestore, collection, doc, addDoc, updateDoc, deleteDoc, getDocs, writeBatch } from '@angular/fire/firestore';
 import { Observable, from } from 'rxjs';
 import { Producto } from '../class/Producto/producto';
-import { collectionData } from 'rxfire/firestore';
-import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class carritoServicio {
 
-  private carritoCollection;
+  private carritoCollection; // Referencia a la colección 'carrito'
 
   constructor(private firestore: Firestore) {
+    // Inicializa la referencia a la colección en Firestore
     this.carritoCollection = collection(this.firestore, 'carrito');
   }
 
+  // Agrega un producto al carrito con cantidad
   agregar(producto: Producto, cantidad: number = 1) {
     const itemCarrito = { ...producto, cantidad };
     return addDoc(this.carritoCollection, itemCarrito);
   }
 
+  // Obtiene todos los productos del carrito
   obtener(): Observable<(Producto & { cantidad: number })[]> {
-    return collectionData(this.carritoCollection, { idField: 'id' }) as Observable<(Producto & { cantidad: number })[]>;
+    return from(getDocs(this.carritoCollection)).pipe(
+      map(snapshot => snapshot.docs.map(doc => ({
+        ...(doc.data() as Producto),
+        cantidad: 0 // inicializamos cantidad en 0
+      })))
+    );
   }
 
   eliminar(id: string) {
@@ -35,6 +43,7 @@ export class carritoServicio {
     return updateDoc(docRef, { cantidad });
   }
 
+  // Vacía todo el carrito usando batch
   async vaciar() {
     const batch = writeBatch(this.firestore);
     const querySnapshot = await getDocs(this.carritoCollection);
@@ -43,6 +52,6 @@ export class carritoServicio {
       batch.delete(doc.ref);
     });
 
-    return batch.commit();
+    return batch.commit(); // Ejecuta todas las eliminaciones en batch
   }
 }
