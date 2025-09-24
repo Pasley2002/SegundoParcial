@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, CollectionReference, DocumentData, getDocs, QuerySnapshot, doc, addDoc, updateDoc, deleteDoc, getDoc } from '@angular/fire/firestore';
+import { Firestore, collection , CollectionReference, DocumentData, getDocs, QuerySnapshot, doc, addDoc, updateDoc, deleteDoc, getDoc } from '@angular/fire/firestore';
 import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Producto } from '../class/Producto/producto';
@@ -61,4 +61,5 @@ export class productoServicio {
     const docRef = doc(this.firestore, `productos/${id}`);
     return deleteDoc(docRef);
   }
+
 }

@@ -47,10 +47,10 @@
     No hay productos cargados.
   </div>
 
-  <div class="mt-4" *ngIf="carrito$ | async as productosDelCarrito">
+  <div class="mt-4" *ngIf="productosCarrito.length > 0">
     <a class="btn btn-success" routerLink="/carrito">
-      Ver Carrito ({{ productosDelCarrito.length }} productos)
+      Ver Carrito ({{ productosCarrito.length }} productos)
     </a>
   </div>
-  
+
 </div>

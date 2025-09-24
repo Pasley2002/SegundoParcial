@@ -22,6 +22,7 @@ export class AgregarProducto implements OnInit {
 
   productoForm: FormGroup;
   modoEdicion: boolean = false;
+  productoId?: string;
 
   constructor(private fb: FormBuilder, private productoServicio: productoServicio, private carritoServicio: carritoServicio, private router: Router, private route: ActivatedRoute) {
     this.productoForm = this.fb.group({
@@ -36,10 +37,10 @@ export class AgregarProducto implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
-        this.modoEdicion = !!params.get('id');
-        const productoId = params.get('id');
-        if (this.modoEdicion && productoId) {
-          return this.productoServicio.getProducto(productoId);
+        this.productoId = params.get('id') ?? undefined;
+        this.modoEdicion = !!this.productoId;
+        if (this.modoEdicion && this.productoId) {
+          return this.productoServicio.getProducto(this.productoId);
         }
         return of(null);
       })
@@ -47,13 +48,13 @@ export class AgregarProducto implements OnInit {
       if (producto) {
         this.productoForm.patchValue(producto);
       }
-    });
-  }
+    });}
 
   guardar() {
-    const producto: Producto = this.productoForm.value;
+    let producto = this.productoForm.value;
 
-    if (this.modoEdicion) {
+    if (this.modoEdicion && this.productoId) {
+      producto = { ...producto, id: this.productoId };
       this.productoServicio.actualizarProducto(producto).then(() => {
         Swal.fire({
           icon: 'success',
@@ -63,6 +64,7 @@ export class AgregarProducto implements OnInit {
         }).then(() => {
           this.router.navigate(['/producto']);
         });
+
       }).catch(error => {
         console.error("Error al actualizar el producto: ", error);
         Swal.fire({
@@ -72,6 +74,7 @@ export class AgregarProducto implements OnInit {
           confirmButtonText: 'OK'
         });
       });
+
     } else {
       this.productoServicio.agregarProducto(producto).then(() => {
         Swal.fire({
@@ -82,6 +85,7 @@ export class AgregarProducto implements OnInit {
         }).then(() => {
           this.router.navigate(['/producto']);
         });
+
       }).catch(error => {
         console.error("Error al agregar el producto: ", error);
         Swal.fire({
@@ -93,7 +97,7 @@ export class AgregarProducto implements OnInit {
       });
     }
   }
-  
+
   cancelar() {
     this.router.navigate(['/producto']);
   }

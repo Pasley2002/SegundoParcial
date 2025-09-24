@@ -26,21 +26,15 @@ export class Carrito implements OnInit {
   }
 
   eliminar(id: string) {
-    this.carrito.eliminar(id).then(() => {
-      console.log('Producto eliminado del carrito');
-    }).catch(error => {
-      console.error('Error al eliminar producto: ', error);
-    });
+    this.carrito.eliminar(id);
+    console.log('Producto eliminado del carrito');
   }
 
   actualizarCantidad(id: string, event: Event) {
     const cantidad = +(event.target as HTMLInputElement).value;
     if (cantidad > 0) {
-      this.carrito.actualizar(id, cantidad).then(() => {
-        console.log('Cantidad actualizada');
-      }).catch(error => {
-        console.error('Error al actualizar la cantidad: ', error);
-      });
+      this.carrito.actualizar(id, cantidad);
+      console.log('Cantidad actualizada');
     }
   }
 

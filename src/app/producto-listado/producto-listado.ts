@@ -8,7 +8,6 @@ import { FiltroPipe } from '../pipe/filtro-pipe';
 import { FormsModule } from '@angular/forms';
 import { carritoServicio } from '../service/carritoServicio';
 import Swal from 'sweetalert2';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-producto-listado',
@@ -17,20 +16,25 @@ import { Observable } from 'rxjs';
   templateUrl: './producto-listado.html',
   styleUrl: './producto-listado.css'
 })
+
 export class ProductoListado implements OnInit {
 
   productos: Producto[] = []; // Lista de productos
   filtro: string = '';
-  carrito$: Observable<any[]>; // Observable con los productos del carrito
+  productosCarrito: (Producto & { cantidad: number })[] = [];
 
   constructor(private router: Router, private productoServicio: productoServicio, public carritoServicio: carritoServicio) {
-    this.carrito$ = this.carritoServicio.obtener(); // Obtiene los productos del carrito
+    const data = localStorage.getItem('productos');
+    this.productos = data ? JSON.parse(data) : [];
   }
 
   ngOnInit(): void {
-    // Suscripción para obtener los productos desde Firestore
     this.productoServicio.getProductos().subscribe(productos => {
       this.productos = productos;
+    });
+
+    this.carritoServicio.obtener().subscribe(productos => {
+      this.productosCarrito = productos;
     });
   }
 
@@ -71,6 +75,11 @@ export class ProductoListado implements OnInit {
             'El producto ha sido eliminado.',
             'success'
           );
+
+          this.productoServicio.getProductos().subscribe(productos => {
+            this.productos = productos;
+          });
+
         }).catch(error => {
           Swal.fire(
             'Error',
