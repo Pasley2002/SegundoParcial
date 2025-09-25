@@ -29,10 +29,10 @@
           <img [src]="producto.imagen" alt="imagen" width="60" height="60" *ngIf="producto.imagen">
         </td>
         <td>
-          <button mat-fab class="boton-editar" (click)="editar(producto)">
+          <button *ngIf="usuarioLogueado?.rol === 'administrador'" mat-fab class="boton-editar" (click)="editar(producto)">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-fab class="boton-eliminar" (click)="eliminar(producto.id)">
+          <button *ngIf="usuarioLogueado?.rol === 'administrador'" mat-fab class="boton-eliminar" (click)="eliminar(producto.id)">
             <mat-icon>delete</mat-icon>
           </button>
           <button mat-fab class="boton-agregar" (click)="agregar(producto)">

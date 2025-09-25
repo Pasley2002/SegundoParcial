@@ -26,7 +26,7 @@ export class Registro {
       usuario: new FormControl('', [Validators.required]),
       email: new FormControl ('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(8)]),
-      rol: new FormControl(1) // El rol por defecto será 1 (usuario normal)
+      rol: new FormControl("usuario")
     });
   }
 

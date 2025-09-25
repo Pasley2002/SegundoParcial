@@ -5,29 +5,39 @@ import { bcraServicio } from '../service/bcraServicio';
 import { carritoServicio } from '../service/carritoServicio';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { Auth } from '@angular/fire/auth';
+import { Auth, getAuth, onAuthStateChanged, User } from '@angular/fire/auth';
 import { facturaServicio } from '../service/facturaServicio';
 import { jsPDF } from 'jspdf';
 import { doc, getDoc, Firestore } from '@angular/fire/firestore';
+import { Chat } from '../chat/chat';
+import { environment } from '../../environments/environment';
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 
 
 @Component({
   selector: 'app-factura',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Chat],
   templateUrl: './factura.html',
   styleUrls: ['./factura.css']
 })
 
 export class Factura implements OnInit {
 
+  usuarioLogueado!: { usuario: string, rol: string };
+
   productosSeleccionados: (Producto & { cantidad: number })[] = [];
   @Output() compraConfirmada = new EventEmitter<void>();
 
   tipoCambioUSD: number = 350;
   nombreUsuario: string = '';
+  private db;
 
-  constructor(private bcraService: bcraServicio, private carritoService: carritoServicio, private router: Router, private auth: Auth, private facturaServicio: facturaServicio, private firestore: Firestore) {}
+  constructor(private bcraService: bcraServicio, private carritoService: carritoServicio, private router: Router, private auth: Auth, private facturaServicio: facturaServicio, private firestore: Firestore) {
+    initializeApp(environment.firebase);
+    this.db = getFirestore();
+  }
 
   ngOnInit(): void {
     this.carritoService.obtener().subscribe(productos => {
@@ -37,6 +47,8 @@ export class Factura implements OnInit {
     this.bcraService.obtenerTipoCambio().subscribe(valor => {
       this.tipoCambioUSD = valor;
     });
+
+    this.cargarUsuarioLogueado();
   }
 
   obtenerTotalARS(): number {
@@ -152,6 +164,34 @@ export class Factura implements OnInit {
     pdf.text(`Monto Total USD: $${totalUSD}`, margin, y);
 
     pdf.save(`Factura_${new Date().toISOString().slice(0,10)}.pdf`);
+  }
+
+  async cargarUsuarioLogueado(): Promise<void> {
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, async (user: User | null) => {
+      if (user) {
+        // Buscar en Firestore la colección "usuarios" usando el email
+        const q = query(collection(this.db, "usuarios"), where("email", "==", user.email));
+        const snapshot = await getDocs(q);
+
+        if (!snapshot.empty) {
+          const docData = snapshot.docs[0].data() as any;
+          this.usuarioLogueado = {
+            usuario: docData.usuario,
+            rol: docData.rol
+          };
+        } else {
+          // Por si no existe en Firestore
+          this.usuarioLogueado = {
+            usuario: user.displayName || user.email || 'Usuario',
+            rol: 'Desconocido'
+          };
+        }
+      } else {
+        this.usuarioLogueado = { usuario: 'Invitado', rol: 'Invitado' };
+      }
+    });
   }
 
 }

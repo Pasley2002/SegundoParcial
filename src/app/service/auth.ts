@@ -22,7 +22,7 @@ export class AuthService {
   }
 
   // Obtiene el rol de un usuario desde Firestore
-  async getRolUsuario(uid: string): Promise<number | null> {
+  async getRolUsuario(uid: string): Promise<string | null> {
     try {
       const userDocRef = doc(this.firestore, `usuarios/${uid}`);
       const userDocSnap = await getDoc(userDocRef);

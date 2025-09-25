@@ -5,6 +5,7 @@ import { Producto } from '../class/Producto/producto';
 @Injectable({
   providedIn: 'root'
 })
+
 export class carritoServicio {
   private productosSubject = new BehaviorSubject<(Producto & { cantidad: number })[]>([]);
   productos$ = this.productosSubject.asObservable();

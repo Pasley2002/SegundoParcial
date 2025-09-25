@@ -1,0 +1,6 @@
+<div *ngFor="let mensaje of mensajes">
+  <strong>{{mensaje.remitente?.usuario}} ({{mensaje.remitente?.rol}}):</strong> {{mensaje.texto}}
+</div>
+
+<input type="text" [(ngModel)]="texto" placeholder="Escribe un mensaje">
+<button (click)="agregar()">Enviar</button>
