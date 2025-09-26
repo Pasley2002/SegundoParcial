@@ -7,6 +7,7 @@ import { Carrito } from './carrito/carrito';
 import { Factura } from './factura/factura';
 import { AdminAuthGuard } from './service/admin-auth-guard';
 import { authGuard } from './service/auth.guard';
+import { ChatPagina } from './chat-pagina/chat-pagina';
 
 export const routes: Routes = [
     {path: '', component: Login},
@@ -17,5 +18,6 @@ export const routes: Routes = [
     {path: 'producto/editar/:id', component: AgregarProducto, canActivate: [authGuard, AdminAuthGuard]},
     {path: 'carrito', component: Carrito, canActivate: [authGuard, AdminAuthGuard]},
     {path: 'factura', component: Factura, canActivate: [authGuard, AdminAuthGuard]},
+    {path: 'chat', component: ChatPagina, canActivate: [authGuard]},
     { path: '**', redirectTo: '/login' }
 ];

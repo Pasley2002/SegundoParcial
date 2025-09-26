@@ -1,5 +1,9 @@
 <div *ngFor="let mensaje of mensajes">
-  <strong>{{mensaje.remitente?.usuario}} ({{mensaje.remitente?.rol}}):</strong> {{mensaje.texto}}
+  <strong>{{mensaje.remitente?.usuario}} ({{mensaje.remitente?.rol}}):</strong>
+  {{mensaje.texto}}
+  <span *ngIf="mensaje.fecha?.toDate">
+    ({{mensaje.fecha.toDate() | date:'shortTime'}})
+  </span>
 </div>
 
 <input type="text" [(ngModel)]="texto" placeholder="Escribe un mensaje">

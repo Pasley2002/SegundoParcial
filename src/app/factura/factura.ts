@@ -9,7 +9,6 @@ import { Auth, getAuth, onAuthStateChanged, User } from '@angular/fire/auth';
 import { facturaServicio } from '../service/facturaServicio';
 import { jsPDF } from 'jspdf';
 import { doc, getDoc, Firestore } from '@angular/fire/firestore';
-import { Chat } from '../chat/chat';
 import { environment } from '../../environments/environment';
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
@@ -18,25 +17,21 @@ import { getFirestore, collection, query, where, getDocs } from 'firebase/firest
 @Component({
   selector: 'app-factura',
   standalone: true,
-  imports: [CommonModule, Chat],
+  imports: [CommonModule],
   templateUrl: './factura.html',
   styleUrls: ['./factura.css']
 })
 
 export class Factura implements OnInit {
 
-  usuarioLogueado!: { usuario: string, rol: string };
-
   productosSeleccionados: (Producto & { cantidad: number })[] = [];
   @Output() compraConfirmada = new EventEmitter<void>();
 
   tipoCambioUSD: number = 350;
   nombreUsuario: string = '';
-  private db;
 
   constructor(private bcraService: bcraServicio, private carritoService: carritoServicio, private router: Router, private auth: Auth, private facturaServicio: facturaServicio, private firestore: Firestore) {
     initializeApp(environment.firebase);
-    this.db = getFirestore();
   }
 
   ngOnInit(): void {
@@ -48,7 +43,6 @@ export class Factura implements OnInit {
       this.tipoCambioUSD = valor;
     });
 
-    this.cargarUsuarioLogueado();
   }
 
   obtenerTotalARS(): number {
@@ -166,32 +160,8 @@ export class Factura implements OnInit {
     pdf.save(`Factura_${new Date().toISOString().slice(0,10)}.pdf`);
   }
 
-  async cargarUsuarioLogueado(): Promise<void> {
-    const auth = getAuth();
-
-    onAuthStateChanged(auth, async (user: User | null) => {
-      if (user) {
-        // Buscar en Firestore la colección "usuarios" usando el email
-        const q = query(collection(this.db, "usuarios"), where("email", "==", user.email));
-        const snapshot = await getDocs(q);
-
-        if (!snapshot.empty) {
-          const docData = snapshot.docs[0].data() as any;
-          this.usuarioLogueado = {
-            usuario: docData.usuario,
-            rol: docData.rol
-          };
-        } else {
-          // Por si no existe en Firestore
-          this.usuarioLogueado = {
-            usuario: user.displayName || user.email || 'Usuario',
-            rol: 'Desconocido'
-          };
-        }
-      } else {
-        this.usuarioLogueado = { usuario: 'Invitado', rol: 'Invitado' };
-      }
-    });
+  volver() {
+    this.router.navigate(['/carrito']);
   }
 
 }
