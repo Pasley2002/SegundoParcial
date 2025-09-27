@@ -5,14 +5,12 @@ import { bcraServicio } from '../service/bcraServicio';
 import { carritoServicio } from '../service/carritoServicio';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { Auth, getAuth, onAuthStateChanged, User } from '@angular/fire/auth';
+import { Auth } from '@angular/fire/auth';
 import { facturaServicio } from '../service/facturaServicio';
 import { jsPDF } from 'jspdf';
 import { doc, getDoc, Firestore } from '@angular/fire/firestore';
 import { environment } from '../../environments/environment';
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
-
 
 @Component({
   selector: 'app-factura',
@@ -74,7 +72,8 @@ export class Factura implements OnInit {
 
     await this.facturaServicio.guardarFactura(productos, totalARS, totalUSD);
     this.nombreUsuario = await this.cargarNombreUsuario();
-    await this.downloadPDF(productos, totalARS, totalUSD);
+
+    await this.downloadCSV(productos, totalARS, totalUSD);
 
     await this.carritoService.vaciar();
     this.compraConfirmada.emit();
@@ -89,75 +88,36 @@ export class Factura implements OnInit {
     });
   }
 
-  async downloadPDF(
+  async downloadCSV(
     productos: (Producto & { cantidad: number })[],
     totalARS: number,
     totalUSD: number
   ) {
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const margin = 10;
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    let y = margin;
+    const encabezados = ["Producto", "Cantidad", "Precio ARS", "Total ARS", "Total USD"];
 
-    pdf.setFontSize(18);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Factura', pageWidth / 2, y, { align: 'center' });
-    y += 10;
+    const filas = productos.map(p =>
+      `${p.nombre};${p.cantidad};${p.precio};${p.precio * p.cantidad};${(p.precio * p.cantidad / this.tipoCambioUSD).toFixed(2)}`
+    );
 
-    pdf.setFontSize(12);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(`Usuario: ${this.nombreUsuario}`, margin, y);
-    pdf.text(`Fecha: ${new Date().toLocaleString()}`, pageWidth - margin, y, { align: 'right' });
-    y += 10;
+    filas.push(`Total;;;${totalARS};${totalUSD}`);
 
-    pdf.setFillColor(200, 200, 200);
-    pdf.rect(margin, y - 4, pageWidth - 2 * margin, 7, 'F');
+    // Armamos contenido CSV
+    const contenido = [
+      `Usuario:;${this.nombreUsuario}`,
+      `Fecha:;${new Date().toLocaleString()}`,
+      "", // línea vacía para separar cabecera
+      encabezados.join(";"),
+      ...filas
+    ].join("\n");
 
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Producto', margin + 2, y);
-    pdf.text('Cant.', 80, y);
-    pdf.text('Precio ARS', 110, y);
-    pdf.text('Total ARS', 145, y);
-    pdf.text('Total USD', 180, y);
-
-    y += 6;
-    pdf.setFont('helvetica', 'normal');
-
-    for (const p of productos) {
-      if (y > pageHeight - 20) {
-        pdf.addPage();
-        y = margin;
-
-        pdf.setFillColor(200, 200, 200);
-        pdf.rect(margin, y - 4, pageWidth - 2 * margin, 7, 'F');
-        pdf.setFont('helvetica', 'bold');
-        pdf.text('Producto', margin + 2, y);
-        pdf.text('Cant.', 80, y);
-        pdf.text('Precio ARS', 110, y);
-        pdf.text('Total ARS', 145, y);
-        pdf.text('Total USD', 180, y);
-        pdf.setFont('helvetica', 'normal');
-        y += 6;
-      }
-
-      pdf.rect(margin, y - 5, pageWidth - 2 * margin, 6);
-
-      pdf.text(p.nombre, margin + 2, y);
-      pdf.text(`${p.cantidad}`, 80, y);
-      pdf.text(`$${p.precio}`, 110, y);
-      pdf.text(`$${p.precio * p.cantidad}`, 145, y);
-      pdf.text(`$${(p.precio * p.cantidad / this.tipoCambioUSD).toFixed(2)}`, 180, y);
-      y += 6;
-    }
-
-    y += 10;
-    pdf.setFont('helvetica', 'bold');
-    pdf.text(`Monto Total ARS: $${totalARS}`, margin, y);
-    y += 6;
-    pdf.text(`Monto Total USD: $${totalUSD}`, margin, y);
-
-    pdf.save(`Factura_${new Date().toISOString().slice(0,10)}.pdf`);
+    // Descarga del archivo
+    const blob = new Blob([contenido], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Factura_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   volver() {
