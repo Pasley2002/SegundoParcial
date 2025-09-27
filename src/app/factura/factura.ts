@@ -7,7 +7,6 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Auth } from '@angular/fire/auth';
 import { facturaServicio } from '../service/facturaServicio';
-import { jsPDF } from 'jspdf';
 import { doc, getDoc, Firestore } from '@angular/fire/firestore';
 import { environment } from '../../environments/environment';
 import { initializeApp } from "firebase/app";

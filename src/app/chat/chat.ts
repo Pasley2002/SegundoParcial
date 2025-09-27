@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "firebase/firestore";
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-chat',
@@ -21,7 +22,7 @@ export class Chat {
 
   @Input() usuarioActual!: { usuario: string, rol: string };
 
-  constructor() {
+  constructor(private router: Router) {
     this.app = initializeApp(environment.firebase);
     this.db = getFirestore(this.app);
 
@@ -52,5 +53,9 @@ export class Chat {
     } catch (e) {
       console.error("Error agregando mensaje:", e);
     }
+  }
+
+  volver() {
+    this.router.navigate(['/producto']);
   }
 }
