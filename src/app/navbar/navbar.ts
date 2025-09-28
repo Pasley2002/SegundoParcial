@@ -15,19 +15,23 @@ export class NavbarComponent implements OnInit {
 
   logueado: boolean = false;
   nombreUsuario: string = '';
+  esAdmin: boolean = false;
 
   constructor(private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
     // Se suscribe a cambios de autenticación
     this.authService.getUser().subscribe(user => {
-      this.logueado = !!user; // True si hay usuario logueado
+      this.logueado = !!user;
+      this.esAdmin = false;
+      this.nombreUsuario = '';
 
       if (user) {
         // Obtiene datos adicionales del usuario desde Firestore
         this.authService.getUsuarioData(user.uid).then(userData => {
           if (userData) {
             this.nombreUsuario = userData.usuario || user.email;
+            this.esAdmin = userData.rol === 'administrador';
           } else {
             this.nombreUsuario = user.email || '';
           }

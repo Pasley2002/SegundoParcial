@@ -26,9 +26,11 @@ export class Chat {
     this.app = initializeApp(environment.firebase);
     this.db = getFirestore(this.app);
 
+    //Referencia a la colección y consulta ordenada por fecha ascendente
     const mensajesRef = collection(this.db, "Mensajes");
     const q = query(mensajesRef, orderBy("fecha", "asc"));
 
+    //Se actualiza 'this.mensajes' cada vez que hay un cambio en la colección 'Mensajes'.
     onSnapshot(q, (snapshot) => {
       this.mensajes = [];
       snapshot.forEach(doc => {
@@ -41,8 +43,9 @@ export class Chat {
     if (!this.texto || !this.usuarioActual) return;
 
     try {
+      //Envío del mensaje a Firestore
       await addDoc(collection(this.db, "Mensajes"), {
-        remitente: {
+        remitente: { //Información del remitente
           usuario: this.usuarioActual.usuario,
           rol: this.usuarioActual.rol
         },

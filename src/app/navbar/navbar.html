@@ -3,8 +3,12 @@
   <div class="container-fluid">
     <span class="navbar-brand">Local ValdesNacho</span>
 
-    <div *ngIf="logueado" class="d-flex align-items-center ms-auto">
+    <!-- Contenedor de usuario, botones y enlaces condicionales a la derecha -->
+    <div *ngIf="logueado" class="d-flex align-items-center">
       <span class="text-white me-3">Bienvenido, {{ nombreUsuario }}</span>
+
+      <a *ngIf="esAdmin" class="btn btn-outline-warning btn-sm me-2" routerLink="/reportes">📊 Reportes</a>
+
       <a class="btn btn-outline-info btn-sm me-2" routerLink="/chat">Chat</a>
       <button class="btn btn-outline-light btn-sm" (click)="logout()">Cerrar Sesión</button>
     </div>

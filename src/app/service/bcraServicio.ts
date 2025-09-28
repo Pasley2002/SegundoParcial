@@ -7,7 +7,7 @@ import { map } from 'rxjs';
 })
 
 export class bcraServicio {
-  
+
   private url = 'https://dolarapi.com/v1/dolares/blue';
 
   constructor(private http: HttpClient) {}
@@ -17,5 +17,5 @@ export class bcraServicio {
       map(res => res.venta ?? 0)
     );
   }
-  
+
 }

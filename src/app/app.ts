@@ -18,9 +18,8 @@ export class App implements OnInit {
   constructor(private auth: Auth) {}
 
   ngOnInit(): void {
-    // Detecta cambios de estado en la autenticación
     onAuthStateChanged(this.auth, (user) => {
-      this.logueado = !!user; // true si hay usuario logueado, false si no
+      this.logueado = !!user;
     });
   }
 }

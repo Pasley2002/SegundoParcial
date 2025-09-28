@@ -13,6 +13,7 @@ import { initializeApp } from 'firebase/app';
   templateUrl: './chat-pagina.html',
   styleUrls: ['./chat-pagina.css']
 })
+
 export class ChatPagina implements OnInit {
 
   usuarioLogueado!: { usuario: string; rol: string };
@@ -37,13 +38,13 @@ export class ChatPagina implements OnInit {
         const snapshot = await getDocs(q);
 
         if (!snapshot.empty) {
+          //Extrae el nombre de usuario y el rol
           const docData = snapshot.docs[0].data() as any;
           this.usuarioLogueado = { usuario: docData.usuario, rol: docData.rol };
         } else {
+          //Si no encuentra documento en Firestore, usa el email como nombre
           this.usuarioLogueado = { usuario: user.email || 'Usuario', rol: 'Desconocido' };
         }
-      } else {
-        this.usuarioLogueado = { usuario: 'Invitado', rol: 'Invitado' };
       }
     });
   }
