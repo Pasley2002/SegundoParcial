@@ -10,10 +10,10 @@ import { Usuario } from '../class/Usuario/usuario';
 
 export class AuthService {
 
-  private user: Observable<any>; // Observable que emite cambios de estado de autenticación
+  private user: Observable<any>; //Observable que emite cambios de estado de autenticación
 
   constructor(private auth: Auth, private firestore: Firestore) {
-    // Crea un observable que emite el usuario actual cuando cambia el estado de autenticación
+    //Crea un observable que emite el usuario actual cuando cambia el estado de autenticación
     this.user = new Observable(subscriber => {
       onAuthStateChanged(this.auth, (user) => {
         subscriber.next(user);
@@ -21,7 +21,7 @@ export class AuthService {
     });
   }
 
-  // Obtiene el rol de un usuario desde Firestore
+  //Obtiene el rol de un usuario desde Firestore
   async getRolUsuario(uid: string): Promise<string | null> {
     try {
       const userDocRef = doc(this.firestore, `usuarios/${uid}`);
@@ -38,7 +38,7 @@ export class AuthService {
     }
   }
 
-  // Obtiene los datos completos de un usuario desde Firestore
+  //Obtiene los datos completos de un usuario desde Firestore
   async getUsuarioData(uid: string): Promise<any | null> {
     try {
       const userDocRef = doc(this.firestore, `usuarios/${uid}`);
@@ -55,7 +55,7 @@ export class AuthService {
     }
   }
 
-  // Registra un nuevo usuario con email, contraseña y rol
+  //Registra un nuevo usuario con email, contraseña y rol
   async register({ email, password, usuario, rol }: Usuario): Promise<void> {
     if (!password) {
       throw new Error("La contraseña es requerida.");
@@ -74,7 +74,7 @@ export class AuthService {
     }
   }
 
-  // Login de usuario con email y contraseña
+  //Login de usuario con email y contraseña
   login({ email, password }: Usuario): Promise<void> {
     if (!password) {
       return Promise.reject(new Error("La contraseña es requerida."));
@@ -85,12 +85,12 @@ export class AuthService {
     });
   }
 
-  // Cierra sesión del usuario actual
+  //Cierra sesión del usuario actual
   logout(): Promise<void> {
     return signOut(this.auth);
   }
 
-  // Devuelve el observable del usuario actual
+  //Devuelve el observable del usuario actual
   getUser(): Observable<any> {
     return this.user;
   }
