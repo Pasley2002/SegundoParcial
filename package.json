@@ -1,5 +1,5 @@
 {
-  "name": "parcial-recu",
+  "name": "segundo-parcial",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:ParcialRecu": "node dist/ParcialRecu/server/server.mjs"
+    "serve:ssr:SegundoParcial": "node dist/SegundoParcial/server/server.mjs"
   },
   "prettier": {
     "overrides": [
