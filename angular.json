@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ParcialRecu": {
+    "SegundoParcial": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/ParcialRecu",
+            "outputPath": "dist/SegundoParcial",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -44,7 +44,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumError": "3MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -66,10 +66,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "ParcialRecu:build:production"
+              "buildTarget": "SegundoParcial:build:production"
             },
             "development": {
-              "buildTarget": "ParcialRecu:build:development"
+              "buildTarget": "SegundoParcial:build:development"
             }
           },
           "defaultConfiguration": "development"

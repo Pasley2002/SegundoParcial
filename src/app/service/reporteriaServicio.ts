@@ -5,6 +5,7 @@ import { Observable, from, map } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
+
 export class ReporteriaServicio {
 
   constructor(private firestore: Firestore) { }

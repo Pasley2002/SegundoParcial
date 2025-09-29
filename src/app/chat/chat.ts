@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
   templateUrl: './chat.html',
   styleUrls: ['./chat.css']
 })
+
 export class Chat {
 
   public mensajes: Array<any> = [];
