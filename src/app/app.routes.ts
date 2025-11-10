@@ -17,8 +17,8 @@ export const routes: Routes = [
     {path: 'producto', component: ProductoListado, canActivate: [authGuard]},
     {path: 'producto/nuevo', component: AgregarProducto, canActivate: [authGuard, AdminAuthGuard]},
     {path: 'producto/editar/:id', component: AgregarProducto, canActivate: [authGuard, AdminAuthGuard]},
-    {path: 'carrito', component: Carrito, canActivate: [authGuard, AdminAuthGuard]},
-    {path: 'factura', component: Factura, canActivate: [authGuard, AdminAuthGuard]},
+    {path: 'carrito', component: Carrito, canActivate: [authGuard]},
+    {path: 'factura', component: Factura, canActivate: [authGuard]},
     {path: 'chat', component: ChatPagina, canActivate: [authGuard]},
     {path: 'reportes', component: Reportes, canActivate: [authGuard, AdminAuthGuard]},
     {path: '**', redirectTo: '/login'}
